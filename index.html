@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,31 @@
     <title>SharePlate - Community Food Sharing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .map-container {
+            height: 300px;
+            background-color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+        }
+        .auth-form {
+            backdrop-filter: blur(10px);
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #10b981;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Navigation -->
@@ -329,8 +354,265 @@
         </div>
     </footer>
 
-    <!-- Include Modal Components -->
-    <div id="modalContainer"></div>
+    <!-- Auth Modals -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md auth-form">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800">Login</h3>
+                    <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="loginEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="loginPassword" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="rememberMe" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                            <label for="rememberMe" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                        </div>
+                        <a href="#" class="text-sm text-green-600 hover:text-green-800">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition">
+                        Login
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">Don't have an account? <button id="switchToRegister" class="text-green-600 hover:text-green-800 font-medium">Register</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md auth-form">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800">Create Account</h3>
+                    <button id="closeRegisterModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="registerForm" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <input type="text" id="firstName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <input type="text" id="lastName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="registerEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="registerEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="registerPassword" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                        <input type="password" id="confirmPassword" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label for="userType" class="block text-sm font-medium text-gray-700 mb-1">I am a:</label>
+                        <select id="userType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <option value="individual">Individual</option>
+                            <option value="business">Business/Organization</option>
+                            <option value="charity">Charity/Food Bank</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="agreeTerms" required class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <label for="agreeTerms" class="ml-2 block text-sm text-gray-700">I agree to the <a href="#" class="text-green-600 hover:text-green-800">Terms of Service</a> and <a href="#" class="text-green-600 hover:text-green-800">Privacy Policy</a></label>
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition">
+                        Create Account
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">Already have an account? <button id="switchToLogin" class="text-green-600 hover:text-green-800 font-medium">Login</button></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Food Listing Modal -->
+    <div id="addFoodModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl auth-form">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800">Add Food Listing</h3>
+                    <button id="closeFoodModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="foodForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="foodName" class="block text-sm font-medium text-gray-700 mb-1">Food Name*</label>
+                            <input type="text" id="foodName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label for="foodType" class="block text-sm font-medium text-gray-700 mb-1">Food Type*</label>
+                            <select id="foodType" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <option value="">Select Type</option>
+                                <option value="vegetarian">Vegetarian</option>
+                                <option value="vegan">Vegan</option>
+                                <option value="meat">Meat</option>
+                                <option value="dairy">Dairy</option>
+                                <option value="bakery">Bakery</option>
+                                <option value="produce">Produce</option>
+                                <option value="prepared">Prepared Meal</option>
+                                <option value="packaged">Packaged Goods</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity*</label>
+                            <input type="text" id="quantity" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="e.g., 2 boxes, 5 lbs">
+                        </div>
+                        <div>
+                            <label for="expiry" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                            <input type="date" id="expiry" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description*</label>
+                        <textarea id="description" rows="3" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Describe the food, ingredients, any special notes..."></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="pickupLocation" class="block text-sm font-medium text-gray-700 mb-1">Pickup Location*</label>
+                            <input type="text" id="pickupLocation" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Address or specific instructions">
+                        </div>
+                        <div>
+                            <label for="pickupTime" class="block text-sm font-medium text-gray-700 mb-1">Available Until*</label>
+                            <input type="datetime-local" id="pickupTime" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="foodImage" class="block text-sm font-medium text-gray-700 mb-1">Food Image</label>
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                            <div class="space-y-1 text-center">
+                                <div class="flex text-sm text-gray-600">
+                                    <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
+                                        <span>Upload a file</span>
+                                        <input id="file-upload" name="file-upload" type="file" class="sr-only">
+                                    </label>
+                                    <p class="pl-1">or drag and drop</p>
+                                </div>
+                                <p class="text-xs text-gray-500">PNG, JPG up to 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="allergens" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <label for="allergens" class="ml-2 block text-sm text-gray-700">This food contains common allergens</label>
+                    </div>
+                    <div class="flex justify-end space-x-4 pt-4">
+                        <button type="button" id="cancelFoodBtn" class="px-6 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition">
+                            Post Listing
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Food Detail Modal -->
+    <div id="foodDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl auth-form my-8">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800" id="detailFoodName">Food Name</h3>
+                    <button id="closeDetailModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="bg-gray-100 rounded-lg overflow-hidden mb-4">
+                            <img id="detailFoodImage" src="https://images.unsplash.com/photo-1546069901-ba9590aed2c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80" 
+                                 alt="Food" class="w-full h-48 object-cover">
+                        </div>
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-user text-green-600 mr-2"></i>
+                                <span id="detailPostedBy">Posted by User</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-green-600 mr-2"></i>
+                                <span id="detailPostedTime">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">Description</h4>
+                            <p id="detailDescription" class="text-gray-600">Food description goes here with all the details about what it is, how it was prepared, ingredients, etc.</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-green-800 mb-2">Allergen Information</h4>
+                            <p id="detailAllergens" class="text-gray-600">Contains: Gluten, Dairy</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">Details</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Type:</span>
+                                    <span id="detailType" class="font-medium">Vegetarian</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Quantity:</span>
+                                    <span id="detailQuantity" class="font-medium">2 boxes</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Expiry:</span>
+                                    <span id="detailExpiry" class="font-medium">Tomorrow</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Available Until:</span>
+                                    <span id="detailAvailableUntil" class="font-medium">Today, 8 PM</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-gray-800 mb-2">Pickup Information</h4>
+                            <p id="detailPickupLocation" class="text-gray-600 mb-2">123 Main St, Apt 4B, Anytown</p>
+                            <div class="map-container">
+                                <p class="text-gray-500">Map would display here showing pickup location</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col space-y-3">
+                            <button id="requestFoodBtn" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition">
+                                Request This Food
+                            </button>
+                            <button id="messageDonorBtn" class="w-full border border-green-600 text-green-600 py-3 rounded-lg font-medium hover:bg-green-50 transition">
+                                Message Donor
+                            </button>
+                            <button id="saveFoodBtn" class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition">
+                                <i class="far fa-bookmark mr-2"></i> Save for Later
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Loading Spinner -->
     <div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -345,12 +627,572 @@
         </div>
     </div>
 
-    <!-- JavaScript Files -->
-    <script src="js/database.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/food-listings.js"></script>
-    <script src="js/modals.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+        // Database simulation
+        const database = {
+            users: JSON.parse(localStorage.getItem('shareplate_users')) || [],
+            foodListings: JSON.parse(localStorage.getItem('shareplate_foodListings')) || [],
+            currentUser: JSON.parse(localStorage.getItem('shareplate_currentUser')) || null,
+            savedFoods: JSON.parse(localStorage.getItem('shareplate_savedFoods')) || []
+        };
+
+        // Sample food listings if none exist
+        if (database.foodListings.length === 0) {
+            database.foodListings = [
+                {
+                    id: 1,
+                    name: "Fresh Organic Apples",
+                    type: "produce",
+                    quantity: "5 lbs",
+                    description: "Freshly picked organic apples from my backyard. Sweet and crisp!",
+                    postedBy: "John D.",
+                    postedById: 101,
+                    postedTime: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+                    pickupLocation: "123 Garden St, Springfield",
+                    pickupTime: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+                    expiry: new Date(Date.now() + 259200000).toISOString(), // 3 days from now
+                    allergens: "None",
+                    image: "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                },
+                {
+                    id: 2,
+                    name: "Homemade Lasagna",
+                    type: "vegetarian",
+                    quantity: "2 large trays",
+                    description: "Vegetarian lasagna with spinach, ricotta, and marinara sauce. Feeds 4-6 people.",
+                    postedBy: "Maria S.",
+                    postedById: 102,
+                    postedTime: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+                    pickupLocation: "456 Oak Ave, Springfield",
+                    pickupTime: new Date(Date.now() + 43200000).toISOString(), // 12 hours from now
+                    expiry: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+                    allergens: "Dairy, Gluten",
+                    image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1630&q=80"
+                },
+                {
+                    id: 3,
+                    name: "Day-Old Pastries",
+                    type: "bakery",
+                    quantity: "12 assorted items",
+                    description: "Assorted pastries from local bakery. Includes croissants, muffins, and danishes.",
+                    postedBy: "Sunrise Bakery",
+                    postedById: 103,
+                    postedTime: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+                    pickupLocation: "789 Market St, Springfield (back entrance)",
+                    pickupTime: new Date(Date.now() + 1800000).toISOString(), // 30 minutes from now
+                    expiry: new Date(Date.now() + 172800000).toISOString(), // 2 days from now
+                    allergens: "Dairy, Eggs, Gluten",
+                    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
+                },
+                {
+                    id: 4,
+                    name: "Organic Chicken Breasts",
+                    type: "meat",
+                    quantity: "3 lbs",
+                    description: "Vacuum-sealed organic chicken breasts. Never frozen, best by tomorrow.",
+                    postedBy: "Local Farms Co-op",
+                    postedById: 104,
+                    postedTime: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
+                    pickupLocation: "321 Farm Rd, Springfield",
+                    pickupTime: new Date(Date.now() + 21600000).toISOString(), // 6 hours from now
+                    expiry: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+                    allergens: "None",
+                    image: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                },
+                {
+                    id: 5,
+                    name: "Assorted Vegetables",
+                    type: "vegetarian",
+                    quantity: "1 box",
+                    description: "Mixed vegetables including carrots, potatoes, onions, and bell peppers.",
+                    postedBy: "Community Garden",
+                    postedById: 105,
+                    postedTime: new Date(Date.now() - 14400000).toISOString(), // 4 hours ago
+                    pickupLocation: "Community Garden shed, 555 Green St, Springfield",
+                    pickupTime: new Date(Date.now() + 28800000).toISOString(), // 8 hours from now
+                    expiry: new Date(Date.now() + 259200000).toISOString(), // 3 days from now
+                    allergens: "None",
+                    image: "https://images.unsplash.com/photo-1518977676601-b53fccaba807?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                },
+                {
+                    id: 6,
+                    name: "Homemade Vegan Cookies",
+                    type: "vegan",
+                    quantity: "2 dozen",
+                    description: "Delicious vegan chocolate chip cookies made with oat flour and coconut sugar.",
+                    postedBy: "Sarah's Vegan Kitchen",
+                    postedById: 106,
+                    postedTime: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
+                    pickupLocation: "222 Baker St, Springfield",
+                    pickupTime: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
+                    expiry: new Date(Date.now() + 604800000).toISOString(), // 1 week from now
+                    allergens: "Nuts (almond flour)",
+                    image: "https://images.unsplash.com/photo-1618923850107-a33ff614111f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                }
+            ];
+            saveToLocalStorage();
+        }
+
+        // Sample users if none exist
+        if (database.users.length === 0) {
+            database.users = [
+                {
+                    id: 101,
+                    firstName: "John",
+                    lastName: "Doe",
+                    email: "john@example.com",
+                    password: "password123",
+                    userType: "individual",
+                    joinDate: new Date().toISOString()
+                },
+                {
+                    id: 102,
+                    firstName: "Maria",
+                    lastName: "Smith",
+                    email: "maria@example.com",
+                    password: "password123",
+                    userType: "individual",
+                    joinDate: new Date().toISOString()
+                },
+                {
+                    id: 103,
+                    firstName: "Sunrise",
+                    lastName: "Bakery",
+                    email: "bakery@example.com",
+                    password: "password123",
+                    userType: "business",
+                    joinDate: new Date().toISOString()
+                }
+            ];
+            saveToLocalStorage();
+        }
+
+        // Helper functions
+        function saveToLocalStorage() {
+            localStorage.setItem('shareplate_users', JSON.stringify(database.users));
+            localStorage.setItem('shareplate_foodListings', JSON.stringify(database.foodListings));
+            localStorage.setItem('shareplate_currentUser', JSON.stringify(database.currentUser));
+            localStorage.setItem('shareplate_savedFoods', JSON.stringify(database.savedFoods));
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.remove('translate-y-10', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        function formatTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) return "Just now";
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+            if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function formatFutureTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInSeconds = Math.floor((date - now) / 1000);
+            
+            if (diffInSeconds < 0) return "Expired";
+            if (diffInSeconds < 60) return "In less than a minute";
+            if (diffInSeconds < 3600) return `In ${Math.floor(diffInSeconds / 60)} minutes`;
+            if (diffInSeconds < 86400) return `In ${Math.floor(diffInSeconds / 3600)} hours`;
+            if (diffInSeconds < 604800) return `In ${Math.floor(diffInSeconds / 86400)} days`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function formatExpiry(dateString) {
+            if (!dateString) return "Not specified";
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInDays = Math.floor((date - now) / (1000 * 60 * 60 * 24));
+            
+            if (diffInDays < 0) return "Expired";
+            if (diffInDays === 0) return "Today";
+            if (diffInDays === 1) return "Tomorrow";
+            if (diffInDays < 7) return `In ${diffInDays} days`;
+            
+            return date.toLocaleDateString();
+        }
+
+        // DOM Elements
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const profileBtn = document.getElementById('profileBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const heroDonateBtn = document.getElementById('heroDonateBtn');
+        const heroFindBtn = document.getElementById('heroFindBtn');
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const closeRegisterModal = document.getElementById('closeRegisterModal');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const addFoodModal = document.getElementById('addFoodModal');
+        const closeFoodModal = document.getElementById('closeFoodModal');
+        const foodForm = document.getElementById('foodForm');
+        const cancelFoodBtn = document.getElementById('cancelFoodBtn');
+        const foodDetailModal = document.getElementById('foodDetailModal');
+        const closeDetailModal = document.getElementById('closeDetailModal');
+        const listingsContainer = document.getElementById('listingsContainer');
+        const foodFilter = document.getElementById('foodFilter');
+        const refreshListings = document.getElementById('refreshListings');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Event Listeners
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        loginBtn.addEventListener('click', () => {
+            loginModal.classList.remove('hidden');
+        });
+
+        registerBtn.addEventListener('click', () => {
+            registerModal.classList.remove('hidden');
+        });
+
+        closeLoginModal.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+        });
+
+        closeRegisterModal.addEventListener('click', () => {
+            registerModal.classList.add('hidden');
+        });
+
+        switchToRegister.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+            registerModal.classList.remove('hidden');
+        });
+
+        switchToLogin.addEventListener('click', () => {
+            registerModal.classList.add('hidden');
+            loginModal.classList.remove('hidden');
+        });
+
+        heroDonateBtn.addEventListener('click', () => {
+            if (database.currentUser) {
+                addFoodModal.classList.remove('hidden');
+            } else {
+                loginModal.classList.remove('hidden');
+                showToast('Please login to donate food');
+            }
+        });
+
+        heroFindBtn.addEventListener('click', () => {
+            document.getElementById('listings').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            database.currentUser = null;
+            saveToLocalStorage();
+            updateAuthUI();
+            showToast('Logged out successfully');
+        });
+
+        closeFoodModal.addEventListener('click', () => {
+            addFoodModal.classList.add('hidden');
+        });
+
+        cancelFoodBtn.addEventListener('click', () => {
+            addFoodModal.classList.add('hidden');
+        });
+
+        closeDetailModal.addEventListener('click', () => {
+            foodDetailModal.classList.add('hidden');
+        });
+
+        foodFilter.addEventListener('change', () => {
+            loadFoodListings();
+        });
+
+        refreshListings.addEventListener('click', () => {
+            loadFoodListings();
+            showToast('Listings refreshed');
+        });
+
+        loadMoreBtn.addEventListener('click', () => {
+            // In a real app, this would load more data from the server
+            showToast('Loading more listings...');
+            setTimeout(() => showToast('No more listings available'), 1500);
+        });
+
+        // Form Submissions
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const user = database.users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                database.currentUser = user;
+                saveToLocalStorage();
+                updateAuthUI();
+                loginModal.classList.add('hidden');
+                showToast('Login successful!');
+            } else {
+                showToast('Invalid email or password');
+            }
+        });
+
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const userType = document.getElementById('userType').value;
+            
+            if (password !== confirmPassword) {
+                showToast('Passwords do not match');
+                return;
+            }
+            
+            if (database.users.some(u => u.email === email)) {
+                showToast('Email already registered');
+                return;
+            }
+            
+            const newUser = {
+                id: Math.floor(Math.random() * 1000000),
+                firstName,
+                lastName,
+                email,
+                password,
+                userType,
+                joinDate: new Date().toISOString()
+            };
+            
+            database.users.push(newUser);
+            database.currentUser = newUser;
+            saveToLocalStorage();
+            updateAuthUI();
+            registerModal.classList.add('hidden');
+            showToast('Registration successful! Welcome to SharePlate!');
+        });
+
+        foodForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            loadingSpinner.classList.remove('hidden');
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                const foodName = document.getElementById('foodName').value;
+                const foodType = document.getElementById('foodType').value;
+                const quantity = document.getElementById('quantity').value;
+                const expiry = document.getElementById('expiry').value;
+                const description = document.getElementById('description').value;
+                const pickupLocation = document.getElementById('pickupLocation').value;
+                const pickupTime = document.getElementById('pickupTime').value;
+                const allergens = document.getElementById('allergens').checked ? "Contains common allergens" : "None";
+                
+                const newFoodListing = {
+                    id: Math.floor(Math.random() * 1000000),
+                    name: foodName,
+                    type: foodType,
+                    quantity,
+                    description,
+                    postedBy: database.currentUser.firstName + ' ' + (database.currentUser.lastName || ''),
+                    postedById: database.currentUser.id,
+                    postedTime: new Date().toISOString(),
+                    pickupLocation,
+                    pickupTime,
+                    expiry,
+                    allergens,
+                    image: "https://images.unsplash.com/photo-1546069901-ba9590aed2c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80" // Default image
+                };
+                
+                database.foodListings.unshift(newFoodListing); // Add to beginning of array
+                saveToLocalStorage();
+                
+                foodForm.reset();
+                addFoodModal.classList.add('hidden');
+                loadingSpinner.classList.add('hidden');
+                loadFoodListings();
+                showToast('Food listing posted successfully!');
+            }, 1500);
+        });
+
+        // Food Listings Functions
+        function loadFoodListings() {
+            listingsContainer.innerHTML = '';
+            
+            const filterValue = foodFilter.value;
+            const filteredListings = filterValue === 'all' 
+                ? database.foodListings 
+                : database.foodListings.filter(food => food.type === filterValue);
+            
+            if (filteredListings.length === 0) {
+                listingsContainer.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-utensils text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-xl font-medium text-gray-600">No food listings available</h3>
+                        <p class="text-gray-500 mt-2">${filterValue !== 'all' ? `Try changing the filter or` : ''} check back later</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredListings.forEach(food => {
+                const foodCard = document.createElement('div');
+                foodCard.className = 'bg-white rounded-lg shadow-md overflow-hidden food-card transition duration-300';
+                foodCard.innerHTML = `
+                    <div class="h-48 overflow-hidden">
+                        <img src="${food.image}" alt="${food.name}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg truncate">${food.name}</h3>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">${food.type.charAt(0).toUpperCase() + food.type.slice(1)}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">${food.description}</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                            <i class="fas fa-user mr-2"></i>
+                            <span>${food.postedBy}</span>
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-clock mr-2"></i>
+                            <span>${formatTime(food.postedTime)}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-medium">${food.quantity}</span>
+                                <span class="text-gray-500 text-sm ml-1">• Expires ${formatExpiry(food.expiry)}</span>
+                            </div>
+                            <button class="bg-green-600 text-white px-3 py-1 rounded-full text-sm hover:bg-green-700 transition view-detail-btn" data-id="${food.id}">
+                                View
+                            </button>
+                        </div>
+                    </div>
+                `;
+                listingsContainer.appendChild(foodCard);
+            });
+            
+            // Add event listeners to view buttons
+            document.querySelectorAll('.view-detail-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const foodId = parseInt(e.target.getAttribute('data-id'));
+                    showFoodDetail(foodId);
+                });
+            });
+        }
+
+        function showFoodDetail(foodId) {
+            const food = database.foodListings.find(f => f.id === foodId);
+            if (!food) return;
+            
+            document.getElementById('detailFoodName').textContent = food.name;
+            document.getElementById('detailFoodImage').src = food.image;
+            document.getElementById('detailPostedBy').textContent = food.postedBy;
+            document.getElementById('detailPostedTime').textContent = formatTime(food.postedTime);
+            document.getElementById('detailDescription').textContent = food.description;
+            document.getElementById('detailAllergens').textContent = food.allergens;
+            document.getElementById('detailType').textContent = food.type.charAt(0).toUpperCase() + food.type.slice(1);
+            document.getElementById('detailQuantity').textContent = food.quantity;
+            document.getElementById('detailExpiry').textContent = formatExpiry(food.expiry);
+            document.getElementById('detailAvailableUntil').textContent = formatFutureTime(food.pickupTime);
+            document.getElementById('detailPickupLocation').textContent = food.pickupLocation;
+            
+            foodDetailModal.classList.remove('hidden');
+        }
+
+        // Update UI based on auth state
+        function updateAuthUI() {
+            if (database.currentUser) {
+                loginBtn.classList.add('hidden');
+                registerBtn.classList.add('hidden');
+                profileBtn.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                usernameDisplay.textContent = database.currentUser.firstName;
+            } else {
+                loginBtn.classList.remove('hidden');
+                registerBtn.classList.remove('hidden');
+                profileBtn.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+            }
+        }
+
+        // Initialize
+        updateAuthUI();
+        loadFoodListings();
+
+        // Request Food Button
+        document.getElementById('requestFoodBtn').addEventListener('click', () => {
+            if (!database.currentUser) {
+                loginModal.classList.remove('hidden');
+                foodDetailModal.classList.add('hidden');
+                showToast('Please login to request food');
+                return;
+            }
+            
+            loadingSpinner.classList.remove('hidden');
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                loadingSpinner.classList.add('hidden');
+                foodDetailModal.classList.add('hidden');
+                showToast('Food request sent to donor!');
+            }, 1500);
+        });
+
+        // Message Donor Button
+        document.getElementById('messageDonorBtn').addEventListener('click', () => {
+            if (!database.currentUser) {
+                loginModal.classList.remove('hidden');
+                foodDetailModal.classList.add('hidden');
+                showToast('Please login to message donor');
+                return;
+            }
+            
+            showToast('Messaging feature would open here');
+        });
+
+        // Save Food Button
+        document.getElementById('saveFoodBtn').addEventListener('click', () => {
+            if (!database.currentUser) {
+                loginModal.classList.remove('hidden');
+                foodDetailModal.classList.add('hidden');
+                showToast('Please login to save food listings');
+                return;
+            }
+            
+            const foodName = document.getElementById('detailFoodName').textContent;
+            database.savedFoods.push(foodName);
+            saveToLocalStorage();
+            showToast('Food listing saved to your profile');
+        });
+
+        // Contact Form
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showToast('Thank you for your message! We will respond soon.');
+            e.target.reset();
+        });
+    </script>
 </body>
 </html>
