@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SharePlate - Community Food Sharing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-utensils text-2xl"></i>
+                <a href="#" class="text-xl font-bold">SharePlate</a>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#home" class="hover:text-green-200 transition">Home</a>
+                <a href="#listings" class="hover:text-green-200 transition">Food Listings</a>
+                <a href="#about" class="hover:text-green-200 transition">About</a>
+                <a href="#contact" class="hover:text-green-200 transition">Contact</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="loginBtn" class="bg-white text-green-600 px-4 py-2 rounded-full font-medium hover:bg-green-50 transition">Login</button>
+                <button id="registerBtn" class="bg-green-700 px-4 py-2 rounded-full font-medium hover:bg-green-800 transition">Register</button>
+                <button id="profileBtn" class="hidden items-center space-x-2 bg-green-700 px-4 py-2 rounded-full font-medium hover:bg-green-800 transition">
+                    <i class="fas fa-user"></i>
+                    <span id="usernameDisplay"></span>
+                </button>
+                <button id="logoutBtn" class="hidden bg-red-500 px-4 py-2 rounded-full font-medium hover:bg-red-600 transition">Logout</button>
+                <button id="mobileMenuBtn" class="md:hidden text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-green-700 px-4 py-2">
+            <div class="flex flex-col space-y-3">
+                <a href="#home" class="hover:text-green-200 transition">Home</a>
+                <a href="#listings" class="hover:text-green-200 transition">Food Listings</a>
+                <a href="#about" class="hover:text-green-200 transition">About</a>
+                <a href="#contact" class="hover:text-green-200 transition">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="py-16 bg-gradient-to-r from-green-500 to-green-600 text-white">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-8 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Share Food, Reduce Waste</h1>
+                <p class="text-xl mb-6">Connect with your community to share excess food and help fight hunger in your neighborhood.</p>
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <button id="heroDonateBtn" class="bg-white text-green-600 px-6 py-3 rounded-full font-bold hover:bg-green-50 transition">Donate Food</button>
+                    <button id="heroFindBtn" class="bg-green-700 px-6 py-3 rounded-full font-bold hover:bg-green-800 transition">Find Food Near You</button>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9590aed2c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80" 
+                     alt="Food sharing" class="rounded-lg shadow-xl max-w-full h-auto max-h-96 object-cover">
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">How SharePlate Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md text-center">
+                    <div class="bg-green-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-plus text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">1. List Your Food</h3>
+                    <p class="text-gray-600">Post details about the food you want to share - what it is, quantity, and pickup details.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md text-center">
+                    <div class="bg-green-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-search text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">2. Find Food Nearby</h3>
+                    <p class="text-gray-600">Browse listings in your area or search for specific types of food you need.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-md text-center">
+                    <div class="bg-green-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-handshake text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">3. Connect & Share</h3>
+                    <p class="text-gray-600">Message the donor to arrange pickup and enjoy your shared meal!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Food Listings -->
+    <section id="listings" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Available Food Near You</h2>
+                <div class="flex space-x-4">
+                    <select id="foodFilter" class="bg-white border border-gray-300 rounded-full px-4 py-2">
+                        <option value="all">All Types</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="meat">Meat</option>
+                        <option value="dairy">Dairy</option>
+                        <option value="bakery">Bakery</option>
+                        <option value="produce">Produce</option>
+                    </select>
+                    <button id="refreshListings" class="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="listingsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Food listings will be loaded here -->
+            </div>
+            
+            <div class="mt-8 text-center">
+                <button id="loadMoreBtn" class="bg-white border border-green-600 text-green-600 px-6 py-3 rounded-full font-medium hover:bg-green-50 transition">
+                    Load More Listings
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                    <h2 class="text-3xl font-bold mb-6 text-gray-800">About SharePlate</h2>
+                    <p class="text-gray-600 mb-4">
+                        SharePlate was founded in 2023 with a simple mission: to reduce food waste and hunger by connecting people in local communities.
+                    </p>
+                    <p class="text-gray-600 mb-4">
+                        Every year, millions of tons of perfectly good food go to waste while many people struggle with food insecurity. Our platform bridges this gap by making it easy to share excess food with neighbors.
+                    </p>
+                    <p class="text-gray-600 mb-6">
+                        Whether you're a restaurant with surplus meals, a grocery store with nearing-expiration items, or a household with extra groceries, SharePlate helps you find someone who can use it.
+                    </p>
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                        <h3 class="font-semibold text-green-800 mb-2">Our Impact</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-green-600">1,250+</div>
+                                <div class="text-gray-600">Meals Shared</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-green-600">500+</div>
+                                <div class="text-gray-600">Active Users</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-green-600">3.5K lbs</div>
+                                <div class="text-gray-600">Food Saved</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-green-600">15+</div>
+                                <div class="text-gray-600">Communities</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="bg-gray-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-800">Testimonials</h3>
+                        <div class="space-y-6">
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">Sarah J.</div>
+                                        <div class="text-sm text-gray-500">Home Cook</div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600">"I often cook more than my family can eat. SharePlate helps me find neighbors who appreciate my extra meals. It feels great to know the food isn't going to waste!"</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">Mike T.</div>
+                                        <div class="text-sm text-gray-500">College Student</div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600">"As a student on a tight budget, SharePlate has been a lifesaver. I've gotten fresh produce, bakery items, and even full meals from generous people in my area."</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">Lisa & Tom</div>
+                                        <div class="text-sm text-gray-500">Café Owners</div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600">"We donate our unsold pastries every evening through SharePlate. It's rewarding to see them enjoyed rather than thrown away, and we've built great community connections."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Contact Us</h2>
+            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-1/2 bg-green-600 text-white p-8">
+                        <h3 class="text-xl font-semibold mb-4">Get In Touch</h3>
+                        <p class="mb-6">Have questions about how SharePlate works or want to bring it to your community? Reach out to us!</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope mt-1 mr-4"></i>
+                                <div>
+                                    <h4 class="font-medium">Email</h4>
+                                    <p>hello@shareplate.org</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-phone mt-1 mr-4"></i>
+                                <div>
+                                    <h4 class="font-medium">Phone</h4>
+                                    <p>(555) 123-4567</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt mt-1 mr-4"></i>
+                                <div>
+                                    <h4 class="font-medium">Address</h4>
+                                    <p>123 Food Share Ave, Suite 100<br>San Francisco, CA 94107</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8">
+                            <h4 class="font-medium mb-2">Follow Us</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="text-2xl hover:text-green-200 transition"><i class="fab fa-facebook"></i></a>
+                                <a href="#" class="text-2xl hover:text-green-200 transition"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="text-2xl hover:text-green-200 transition"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="text-2xl hover:text-green-200 transition"><i class="fab fa-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 p-8">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-800">Send Us a Message</h3>
+                        <form id="contactForm" class="space-y-4">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div>
+                                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                <input type="text" id="subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                <textarea id="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">SharePlate</h3>
+                    <p class="text-gray-400">Connecting communities to share food and reduce waste.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="#listings" class="text-gray-400 hover:text-white transition">Food Listings</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Food Safety Guidelines</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Community Guidelines</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                    <p class="text-gray-400 mb-4">Subscribe to get updates on new features and community events.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 rounded-l-lg w-full text-gray-800">
+                        <button class="bg-green-600 px-4 py-2 rounded-r-lg hover:bg-green-700 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400">© 2023 SharePlate. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Include Modal Components -->
+    <div id="modalContainer"></div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="loading-spinner w-12 h-12 rounded-full"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-300 z-50 hidden">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Operation successful!</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/food-listings.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
